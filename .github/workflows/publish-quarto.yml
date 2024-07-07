@@ -1,26 +1,32 @@
-name: Render and Publish
+name: GitHub Pages
+
 on:
   push:
     branches:
-      - main  # changes pushed to this branch will trigger a build.
+      - main  # Set the branch you want to deploy from
 
 jobs:
-  build-deploy:
-      runs-on: ubuntu-latest
-      permissions:
-        contents: write
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v3
-          
-        - name: Set up Quarto
-          uses: quarto-dev/quarto-actions/setup@v2
-          with:
-            version: 1.3.340
+  build:
+    runs-on: ubuntu-latest
 
-        - name: Publish to GitHub Pages (and render)
-          uses: quarto-dev/quarto-actions/publish@v2
-          with:
-            target: gh-pages # renderred html files will be pushed here
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7'  # Specify the Ruby version
+        bundler-cache: true
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Build site
+      run: bundle exec jekyll build --source ./docs --destination ./docs/_site
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_site
