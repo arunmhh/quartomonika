@@ -4,3 +4,5 @@ project:
 execute:
   freeze: auto
 format: html
+website:
+  site-url: "<https://arunmhh.github.io/quartomonika/>" # makes site links work on your remote site
