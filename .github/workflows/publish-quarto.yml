@@ -1,34 +1,26 @@
-name: Quarto Publish
-
+name: Render and Publish
 on:
   push:
     branches:
-      - main
+      - main  # changes pushed to this branch will trigger a build.
 
 jobs:
   build-deploy:
-    runs-on: ubuntu-latest
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v3
+          
+        - name: Set up Quarto
+          uses: quarto-dev/quarto-actions/setup@v2
+          with:
+            version: 1.3.340
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          version: 1.2.0 # or the latest version
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get install -y pandoc
-          Rscript -e 'install.packages("quarto")'
-
-      - name: Render site
-        run: quarto render
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
-
+        - name: Publish to GitHub Pages (and render)
+          uses: quarto-dev/quarto-actions/publish@v2
+          with:
+            target: gh-pages # renderred html files will be pushed here
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
