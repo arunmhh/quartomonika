@@ -1,1 +1,1 @@
-Sitemap: https://github.com/arunmhh/quartomonika/sitemap.xml
+Sitemap: <https://arunmhh.github.io/quartomonika/>/sitemap.xml
