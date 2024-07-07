@@ -1,32 +1,33 @@
-name: GitHub Pages
+name: Quarto Publish
 
 on:
   push:
     branches:
-      - main  # Set the branch you want to deploy from
+      - main
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '2.7'  # Specify the Ruby version
-        bundler-cache: true
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.2.0 # or the latest version
 
-    - name: Install dependencies
-      run: bundle install
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y pandoc
+          Rscript -e 'install.packages("quarto")'
 
-    - name: Build site
-      run: bundle exec jekyll build --source ./docs --destination ./docs/_site
+      - name: Render site
+        run: quarto render
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_site
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
